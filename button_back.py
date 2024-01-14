@@ -25,7 +25,11 @@ def o(btn: tk.Button, lst: List[Union[int, str]], lst_btn: List[tk.Button], labe
         return
     lst[int(btn.cget('text')) - 1] = znak  # заменяем в списке значение на знак (нолик или крестик)
     print(lst)
-    btn.configure(text=znak)
+    # разные цвета для ходов человека и ходов компьютера
+    if znak == O:
+        btn.configure(text=znak, fg='white')
+    else:
+        btn.configure(text=znak, fg='red')
     if vin(lst=lst) == O:
         label_title.configure(text='Победил игрок')
         print('победил игрок')
@@ -52,3 +56,7 @@ def o(btn: tk.Button, lst: List[Union[int, str]], lst_btn: List[tk.Button], labe
         print('ничья')
         end = True
         return
+
+
+def exit_game():
+    exit()

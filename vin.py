@@ -1,5 +1,6 @@
 from typing import Union
 
+
 X = '\033[33mX\033[0m'  # для изменения цветов https://habr.com/ru/sandbox/158854/
 O = '\033[36mO\033[0m'
 

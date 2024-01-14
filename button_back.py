@@ -3,6 +3,8 @@ from typing import List, Union
 from vin import vin, O, X, nichya
 from test import robot, del_x_o
 
+end = False
+
 
 def o(btn: tk.Button, lst: List[Union[int, str]], lst_btn: List[tk.Button], label_title: tk.Label, znak: str = 'O'):
     """
@@ -13,6 +15,9 @@ def o(btn: tk.Button, lst: List[Union[int, str]], lst_btn: List[tk.Button], labe
     label_title: сам Label, где будет отображаться информация об игре
     znak: какой знак ставить, O или X
     """
+    global end
+    if end:  # если кто-то победил, или уже ничья, то больше не позволяем ходить
+        return
     label_title.configure(text='Ходи')
     if not str(btn.cget('text')).isdigit():
         label_title.configure(text='Уже занято')
@@ -24,10 +29,12 @@ def o(btn: tk.Button, lst: List[Union[int, str]], lst_btn: List[tk.Button], labe
     if vin(lst=lst) == O:
         label_title.configure(text='Победил игрок')
         print('победил игрок')
+        end = True
         return
     if nichya(lst):
         label_title.configure(text='Ничья')
         print('ничья')
+        end = True
         return
         # print(lst_btn)
     if znak == X:
@@ -38,8 +45,10 @@ def o(btn: tk.Button, lst: List[Union[int, str]], lst_btn: List[tk.Button], labe
     if vin(lst) == X:
         label_title.configure(text='Победил компьютер')
         print('Победил компьютер')
+        end = True
         return
     if nichya(lst):
         label_title.configure(text='Ничья')
         print('ничья')
+        end = True
         return

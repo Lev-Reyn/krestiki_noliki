@@ -3,6 +3,7 @@ from typing import List, Union
 from vin import vin, O, X, nichya
 from test import robot, del_x_o
 
+
 end = False
 
 
@@ -58,5 +59,69 @@ def o(btn: tk.Button, lst: List[Union[int, str]], lst_btn: List[tk.Button], labe
         return
 
 
-def exit_game():
-    exit()
+def exit_game(window: tk.Tk):
+    window.destroy()
+
+
+def WM_DELETE_WINDOW_YES_NO(window: tk.Tk):
+    """Закрытие окна"""
+    popup = tk.Toplevel(window)
+    popup.resizable(width=False, height=False)  # запрещаем изменять размер окна
+    popup.geometry('200x100')
+    popup.title("Предупреждение")
+
+    label = tk.Label(popup, text="Вы уверены, что хотите\n закрыть приложение?")
+    label.pack(padx=10, pady=10)
+
+    yes_button = tk.Button(popup, text="Да", command=window.destroy)
+    yes_button.pack(side="left", padx=5)
+
+    no_button = tk.Button(popup, text="Нет", command=popup.destroy)
+    no_button.pack(side="right", padx=5)
+
+
+# def WM_DELETE_WINDOW_NO(window: tk.Tk):
+#     """не закрывает окно, а переносит в другое место его просто"""
+#
+#     window.geometry(f'725x600+{}+{}')
+class WindowGeometry:
+    __diferent_places = [
+        ['100', '100'],
+        ['400', '100'],
+        ['100', '400'],
+        ['400', '400'],
+    ]
+
+    def __init__(self, window: tk.Tk, window_geometry: str, place_x: str = '20', place_y: str = '20'):
+        """
+        window_geometry: только разрешение
+        place_x: где находится будет по x
+        place_y: где находится будет по y
+        """
+        self.window_geometry = window_geometry
+        self.place_x = place_x
+        self.place_y = place_y
+        self.__n_position = [self.place_x, self.place_y]
+        self.window = window
+        window.geometry(str(self))
+        self.__n = 0
+
+    def __str__(self):
+        return f'{self.window_geometry}+{self.place_x}+{self.place_y}'
+
+    def change_place(self, place_x: str, place_y: str):
+        self.place_x = place_x
+        self.place_y = place_y
+        self.window.geometry(str(self))
+
+    def next_place(self):
+        self.change_place(place_x=self.__diferent_places[self.__n % len(self.__diferent_places)][0],
+                          place_y=self.__diferent_places[self.__n % len(self.__diferent_places)][1])
+        # print(self.__diferent_places[self.__n % len(self.__diferent_places)])
+        self.__n += 1
+
+
+
+
+
+# t = RandomWindow('100x200', '100', '120')

@@ -21,7 +21,6 @@ label_title.grid(columnspan=6, column=0, row=0)
 # поля (кнопки)
 btn1 = Button(text=1, background=colour_button, font=('impact', 60), height=180, fg='blue', activebackground='blue',
               activeforeground='blue',
-
               command=lambda: o(btn1, lst, lst_btn, label_title))
 btn1.grid(columnspan=2, column=0, row=1)
 

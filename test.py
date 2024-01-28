@@ -22,3 +22,4 @@ if __name__ == '__main__':
     lst_after_del_x_o = del_x_o(lst)
     print(robot(lst_after_del_x_o))
     print(socket.gethostbyname_ex(socket.gethostname()))
+    print(socket.gethostbyname_ex(socket.gethostname()))

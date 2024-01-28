@@ -1,7 +1,12 @@
 from tkinter import *
+import sys
 from tkmacosx import Button
+
+
+# меняем корневую директорию (временное решение)
+sys.path.insert(0, '/Users/levreyn/Yandex.Disk.localized/python_otr/крестики_нолики/krestiki_noliki')
 from button_back import *
-from krestiki_noliki_3_variants.buttons import ButtonsVariantGame, ButtonsPole
+from krestiki_noliki_3_variants.buttons import ButtonsVariantGame, ButtonsServerClient
 
 window = Tk()
 window.title('Крестики нолики')
@@ -10,11 +15,10 @@ window.resizable(width=False, height=False)  # запрещаем изменят
 label_title = Label(text='Выбери режим игры', background='cyan', font=('impact', 15), width=80)
 label_title.grid(columnspan=6, column=0, row=0)
 
-btn_variants_game = ButtonsVariantGame(label_title=label_title)
+btn_variants_game = ButtonsVariantGame(label_title=label_title, window=window)
 btn_variants_game.grid()
-# btn_pole = ButtonsPole(label_title=label_title, var_game=btn_variants_game.var_game)
-# btn_pole.grid()
 
-
+# test = ButtonsServerClient(label_title=label_title)
+# test.grid()
 
 window.mainloop()

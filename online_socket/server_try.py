@@ -33,11 +33,11 @@ def start_server():
         game_state = json.loads(data.decode('utf-8'))
         print("Получено от клиента: ", game_state)  # Печатаем полученные данные.
 
-        time.sleep(5)  # Ждем 5 секунд перед ответом.
+        # time.sleep(5)  # Ждем 5 секунд перед ответом.
 
         # Обновляем состояние игры. Например, ставим 'O' в ячейку поля.
-        game_state['field'][count] = 'O'
-        count += 2
+        game_state['field'][int(input()) - 1] = 'O'
+        # count += 2
 
         # Переводим обновленное состояние игры обратно в формат JSON и отправляем клиенту.
         updated_state = json.dumps(game_state).encode('utf-8')

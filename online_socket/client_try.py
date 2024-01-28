@@ -11,8 +11,7 @@ def start_client():
     client_socket.connect(('localhost', 12345))
 
     # Начальное состояние игры - поле для игры и состояние игры.
-    game_state = {'field': [1, 2, 3, 4, 5, 6, 7, 8, 9],
-                  'condition': 'ожидаю подтверждения'}
+    game_state = {'field': [1, 2, 3, 4, 5, 6, 7, 8, 9]}
     count = 1
     while True:
         # Преобразуем начальное состояние игры в формат JSON и отправляем серверу.
@@ -30,8 +29,8 @@ def start_client():
         time.sleep(5)
         try:
             # Обновляем состояние игры. Например, ставим 'X' в ячейку поля.
-            game_state['field'][count] = 'X'
-            count += 2
+            game_state['field'][int(input()) - 1] = 'X'
+            # count += 2
         except IndexError:
             print('Закончились свободные поля, игра окончена')
             break

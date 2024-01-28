@@ -32,12 +32,12 @@ def vin(lst: list) -> Union[str, bool]:
         else:
             return O
     if lst[0] == lst[3] == lst[6]:
-        if lst[2] == X:
+        if lst[0] == X:
             return X
         else:
             return O
     if lst[1] == lst[4] == lst[7]:
-        if lst[2] == X:
+        if lst[1] == X:
             return X
         else:
             return O

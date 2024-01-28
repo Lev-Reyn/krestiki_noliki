@@ -1,4 +1,5 @@
 import random
+import socket
 
 
 def del_x_o(lst: list) -> list:
@@ -20,3 +21,4 @@ if __name__ == '__main__':
     lst = [1, 2, 'O', 4, 'X', 6, 7, "X", "O"]
     lst_after_del_x_o = del_x_o(lst)
     print(robot(lst_after_del_x_o))
+    print(socket.gethostbyname_ex(socket.gethostname()))

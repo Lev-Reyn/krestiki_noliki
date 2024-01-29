@@ -22,3 +22,4 @@ btn_variants_game.grid()
 # test.grid()
 
 window.mainloop()
+

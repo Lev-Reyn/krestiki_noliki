@@ -233,7 +233,7 @@ class ButtonsServerClient(ButtonsPole):
                                  command=lambda: self.start_server())
         self.btn_client = Button(text='client', background=colour_button, font=('impact', 60), width=362,
                                  height=180, fg='yellow', activebackground='yellow', activeforeground='blue',
-                                 command=lambda: self.start_client())
+                                 command=lambda: self.client_entry_ip())
 
         self.buttons_client_server = {'buttons': [self.btn_server, self.btn_client],
                                       'place': [
@@ -250,6 +250,10 @@ class ButtonsServerClient(ButtonsPole):
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         print(socket.gethostname())
         # Настраиваем сокет на определенный адрес и порт. 'localhost' - это ваш компьютер.
+        self.label_title.configure(text=f'Ждём подключения клиента\n'
+                                        f'со стороны клиента введите '
+                                        f'{socket.gethostbyname_ex(socket.gethostname())[-1][-1]}')
+        self.window.update()
         self.server_socket.bind((socket.gethostbyname_ex(socket.gethostname())[-1][-1], 12345))
         print(socket.gethostbyname_ex(socket.gethostname()))
 
@@ -307,13 +311,54 @@ class ButtonsServerClient(ButtonsPole):
         self.server_receiving_msg()
         pass
 
+    def client_entry_ip(self):
+        """
+        После того, как клиент нажимает, что он клиент, появляется меню, для ввода самого ip адреса,
+        по которому подключиться
+        """
+        self.entry_ip = Entry(width=15, font=('impact', 40))
+        self.btn_send_ip = Button(text='Подключиться', width=380, font=('impact', 40),
+                                  command=lambda: self.start_client_after_entry_ip())
+        self.grid_forget_server_client()
+        self.button_entry_ip = {'buttons': [self.entry_ip, self.btn_send_ip],
+                                'place': [
+                                    {'row': 1, 'column': 0, 'columnspan': 1},  # entry для ip адреса
+                                    {'row': 1, 'column': 2, 'columnspan': 5},  # btn для подключения
+                                ]
+                                }
+        self.grid(btns=self.button_entry_ip)
+
+    def start_client_after_entry_ip(self):
+        """
+        Клиент хранит ip адрес, по которому осуществляется подключение к сервер
+        """
+        self.ip_server_for_client = self.entry_ip.get()  # переменная, которая хранит ip адрес сервера, для подключения
+        # нужно запустить асинхронный таймер, который сбросит код для подключения
+        self.grid_forget(btns=self.button_entry_ip)
+        self.window.update()
+        self.start_client()
+
     def start_client(self):
         self.client = True  # обозначаем, что данный человек включил клиента
         # Создаем сокет. Это как телефон, который можно использовать для звонков.
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-        # Подключаемся к серверу. 'localhost' и 12345 - это адрес и порт сервера.
-        self.client_socket.connect(('169.254.110.122', 12345))
+        self.client_socket.settimeout(10)  # Установка времени ожидания в 10 секунд
+        try:
+            # Подключаемся к серверу. 'localhost' и 12345 - это адрес и порт сервера.
+            self.client_socket.connect((self.ip_server_for_client, 12345))
+        except socket.timeout:
+            print("Не удалось подключиться за отведенное время")
+            self.label_title.configure(text=f'Не удалось подключиться за отведенное время / сервер не подключён\n'
+                                            f'попробуйте снова ввести ip адрес')
+            self.client_entry_ip()  # запускаем повторно возможность ввести ip адрес
+            return
+        except socket.error as err:
+            print(f"Произошла ошибка сокета: {err}")
+            self.label_title.configure(text=f'Произошла ошибка сокета: {err} / сервер не подключён\n'
+                                            f'попробуйте снова ввести ip адрес')
+            self.client_entry_ip()  # запускаем повторно возможность ввести ip адрес
+            return
 
         # Печатаем информацию о том, что успешно подключились
         print(f"Успешно подключились")

@@ -14,6 +14,9 @@ class Buttons:
     def __init__(self, label_title: Label, window: Tk):
         self.window = window
         self.label_title = label_title
+        # добавляем кнопки закрытия и заново
+        self.__btn_close_restart()
+        self.grid(self.buttons_close_restart)
 
     def grid_forget(self, btns: Union[bool, Dict] = False):
         """Убрать из окна все кнопки (но если передали в btns другие кнопки, то удалить их) """
@@ -42,6 +45,20 @@ class Buttons:
     def on_close(self):
         """Закрытие игры"""
         self.window.destroy()
+
+    def __btn_close_restart(self):
+        """Создание кнопки закрытия приложения и рестарта"""
+        self.btn_close = Button(text='закрыть', bg='red', font=('impact', 20), width=240,
+                                command=lambda: self.on_close())
+        self.btn_restart = Button(text='заново (не работает)')
+
+        self.buttons_close_restart = {
+            'buttons': [self.btn_close, self.btn_restart],
+            'place': [
+                {'row': 4, 'column': 4, 'columnspan': 2},  # кнопка btn_close
+                {'row': 4, 'column': 2, 'columnspan': 2},  # кнопка btn_restart
+            ]
+        }
 
 
 class ButtonsVariantGame(Buttons):
@@ -458,8 +475,11 @@ class ButtonsServerClient(ButtonsPole):
         """
         if self.client:
             self.client_close()
+            print('Клиент отключён')
 
         if self.server:
             self.server_close()
+
+            print('Сервер отключён')
         super(ButtonsServerClient, self).on_close()
-        self.window.destroy()
+

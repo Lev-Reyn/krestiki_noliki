@@ -1,10 +1,10 @@
 from tkinter import *
 import sys
+import os
 from tkmacosx import Button
 
-
 # меняем корневую директорию (временное решение)
-sys.path.insert(0, '/Users/levreyn/Yandex.Disk.localized/python_otr/крестики_нолики/krestiki_noliki')
+sys.path.insert(0, '/'.join(os.path.realpath(__file__).split('/')[:-2]))  # полный путь до папки krestiki_noliki
 from button_back import *
 from krestiki_noliki_3_variants.buttons import ButtonsVariantGame, ButtonsServerClient
 
@@ -18,8 +18,15 @@ label_title.grid(columnspan=6, column=0, row=0)
 btn_variants_game = ButtonsVariantGame(label_title=label_title, window=window)
 btn_variants_game.grid()
 
+
+def on_close():
+    print("Окно закрыто")
+    window.destroy()
+
+
+window.protocol("WM_DELETE_WINDOW", on_close)
+
 # test = ButtonsServerClient(label_title=label_title)
 # test.grid()
 
 window.mainloop()
-

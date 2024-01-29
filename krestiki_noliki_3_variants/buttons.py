@@ -11,7 +11,8 @@ import json  # Импортируем модуль для работы с дан
 class Buttons:
     """Класс родитель, самостоятельно нерабочий"""
 
-    def __init__(self, label_title: Label):
+    def __init__(self, label_title: Label, window: Tk):
+        self.window = window
         self.label_title = label_title
 
     def grid_forget(self, btns: Union[bool, Dict] = False):
@@ -38,17 +39,22 @@ class Buttons:
             btn: Button
             btn.grid(row=place['row'], column=place['column'], columnspan=place['columnspan'])
 
+    def on_close(self):
+        """Закрытие игры"""
+        self.window.destroy()
+
 
 class ButtonsVariantGame(Buttons):
     def __init__(self, label_title: Label, window: Tk):
-        super().__init__(label_title=label_title)
+        super().__init__(label_title=label_title, window=window)
         self.__buttons_variants_game()
         self.window = window
 
     def variant_game(self, var_game: str):
         self.var_game = var_game
         if self.var_game == 'comp' or self.var_game == 'second_player':
-            self.btn_pole = ButtonsPole(label_title=self.label_title, var_game=self.var_game)  # запускаем игровое поле
+            self.btn_pole = ButtonsPole(label_title=self.label_title, var_game=self.var_game,
+                                        window=self.window)  # запускаем игровое поле
             self.btn_pole.grid()
         else:
             # по сети
@@ -84,8 +90,8 @@ class ButtonsPole(Buttons):
     O = 'O'
     X = 'X'
 
-    def __init__(self, label_title, var_game: str):
-        super().__init__(label_title=label_title)
+    def __init__(self, label_title, var_game: str, window: Tk):
+        super().__init__(label_title=label_title, window=window)
         self.variant_game = var_game
         self.start_new_pole()
         # if self.variant_game == 'online':
@@ -215,7 +221,7 @@ class ButtonsPole(Buttons):
 
 class ButtonsServerClient(ButtonsPole):
     def __init__(self, label_title: Label, window: Tk):
-        super().__init__(label_title=label_title, var_game='online')
+        super().__init__(label_title=label_title, var_game='online', window=window)
         self.window = window
         self.__buttons_server_client()
         # Начальное состояние игры - поле для игры и состояние игры.
@@ -445,3 +451,15 @@ class ButtonsServerClient(ButtonsPole):
             elif self.lst[i] == "O":
                 btn.configure(text=str(self.lst[i]), fg='white')
             # print(f'{i} изменили на кнопке {btn}, {self.lst[i]}')
+
+    def on_close(self):
+        """
+        Помимо основного закрытия игры отключаем сервер и клиента
+        """
+        if self.client:
+            self.client_close()
+
+        if self.server:
+            self.server_close()
+        super(ButtonsServerClient, self).on_close()
+        self.window.destroy()

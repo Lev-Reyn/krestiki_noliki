@@ -50,13 +50,13 @@ class Buttons:
         """Создание кнопки закрытия приложения и рестарта"""
         self.btn_close = Button(text='закрыть', bg='red', font=('impact', 20), width=240,
                                 command=lambda: self.on_close())
-        self.btn_restart = Button(text='заново (не работает)')
+        self.btn_restart = Button(text='заново (не работает)', bg='yellow', font=('impact', 20), width=240, )
 
         self.buttons_close_restart = {
             'buttons': [self.btn_close, self.btn_restart],
             'place': [
                 {'row': 4, 'column': 4, 'columnspan': 2},  # кнопка btn_close
-                {'row': 4, 'column': 2, 'columnspan': 2},  # кнопка btn_restart
+                {'row': 4, 'column': 0, 'columnspan': 2},  # кнопка btn_restart
             ]
         }
 
@@ -318,9 +318,11 @@ class ButtonsServerClient(ButtonsPole):
         if self.game_state['condition'] == 'O':
             self.label_title.configure(text='победил O')  # обновляем информацию, что победил O
             self.disable_buttons()
+            self.server_close()
         if self.game_state['condition'] == 'ничья':
             self.label_title.configure(text='Ничья')  # обновляем информацию, что ничья
             self.disable_buttons()
+            self.server_close()
         print("Получено от клиента: ", self.game_state)  # Печатаем полученные данные.
 
     def server_send(self, key: str, value: Union[list, str], **kwargs):
@@ -331,7 +333,9 @@ class ButtonsServerClient(ButtonsPole):
         # Переводим обновленное состояние игры обратно в формат JSON и отправляем клиенту.
         self.updated_state = json.dumps(self.game_state).encode('utf-8')
         self.client_socket.send(self.updated_state)
-        self.server_receiving_msg()
+        # только: когда состояние None (никто не выиграл), то ждём от клиента сообщение
+        if self.game_state['condition'] == None:
+            self.server_receiving_msg()
         pass
 
     def client_entry_ip(self):
@@ -342,11 +346,13 @@ class ButtonsServerClient(ButtonsPole):
         self.entry_ip = Entry(width=15, font=('impact', 40))
         self.btn_send_ip = Button(text='Подключиться', width=380, font=('impact', 40),
                                   command=lambda: self.start_client_after_entry_ip())
+        # self.label_for_probel = Label(text=' ')
         self.grid_forget_server_client()
         self.button_entry_ip = {'buttons': [self.entry_ip, self.btn_send_ip],
                                 'place': [
-                                    {'row': 1, 'column': 0, 'columnspan': 1},  # entry для ip адреса
-                                    {'row': 1, 'column': 2, 'columnspan': 5},  # btn для подключения
+                                    {'row': 1, 'column': 0, 'columnspan': 2},  # entry для ip адреса
+                                    # {'row': 1, 'column': 2, 'columnspan': 2},  # entry для ip адреса
+                                    {'row': 1, 'column': 4, 'columnspan': 2},  # btn для подключения
                                 ]
                                 }
         self.grid(btns=self.button_entry_ip)
@@ -404,9 +410,11 @@ class ButtonsServerClient(ButtonsPole):
         if self.game_state['condition'] == 'X':
             self.label_title.configure(text='победил X')  # обновляем информацию, что победил O
             self.disable_buttons()
+            self.client_close()  # отключаем клиента
         if self.game_state['condition'] == 'ничья':
             self.label_title.configure(text='Ничья')  # обновляем информацию, что ничья
             self.disable_buttons()
+            self.client_close()  # отключаем клиента
         print("Получено от клиента: ", self.game_state, f'list {print(self.lst)}')  # Печатаем полученные данные.
         # Печатаем обновленное состояние игры, полученное от сервера.
         print("Обновленное состояние от сервера: ", self.game_state)
@@ -423,7 +431,9 @@ class ButtonsServerClient(ButtonsPole):
         # Это как отправка сообщения с описанием игры.
         data = json.dumps(self.game_state).encode('utf-8')
         self.client_socket.send(data)
-        self.client_receiving_msg()
+        # только, когда состояние None (никто не выиграл), то ждём от сервера сообщение
+        if self.game_state['condition'] == None:
+            self.client_receiving_msg()
 
     def grid_pole(self):
         super().grid()
@@ -450,13 +460,17 @@ class ButtonsServerClient(ButtonsPole):
             condition = super().o(btn=btn, znak='X')['condition']  # состояние игры
             self.window.update()
             self.server_send(key='field', value=self.lst, condition=condition)
-            # self.server_close()
+            if condition != None:
+                self.server_close()
 
         if self.client:
             condition = super().o(btn=btn, znak='O')['condition']  # состояние игры
             print(f'client work {btn} \n{btn.cget("text")}')
             self.window.update()
             self.client_send(key='field', value=self.lst, condition=condition)
+
+            if condition != None:
+                self.client_close()
 
             # self.client_close()  # закрываем соединение клиента
 
@@ -482,4 +496,3 @@ class ButtonsServerClient(ButtonsPole):
 
             print('Сервер отключён')
         super(ButtonsServerClient, self).on_close()
-

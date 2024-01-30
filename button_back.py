@@ -3,7 +3,6 @@ from typing import List, Union
 from vin import vin, O, X, nichya
 from test import robot, del_x_o
 
-
 end = False
 
 
@@ -119,9 +118,5 @@ class WindowGeometry:
                           place_y=self.__diferent_places[self.__n % len(self.__diferent_places)][1])
         # print(self.__diferent_places[self.__n % len(self.__diferent_places)])
         self.__n += 1
-
-
-
-
 
 # t = RandomWindow('100x200', '100', '120')
